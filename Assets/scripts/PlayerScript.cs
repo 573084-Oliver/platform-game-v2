@@ -24,7 +24,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         anim = GetComponent<Animator>();      //initialise the rigidbody component
         sr = GetComponent<SpriteRenderer>();
         groundLayerMask = LayerMask.GetMask("Ground");
-        
+        print("kept you waiting, huh?");
     }
 
     // Update is called once per frame
@@ -32,7 +32,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         // read the x-axis and output it to the rigidbody
         Vector2 moveVel = moveAction.ReadValue<Vector2>();
-        rb.linearVelocity = new Vector2(moveVel.x * 3, moveVel.y *3);
+        rb.linearVelocity = new Vector2(moveVel.x * 3, rb.linearVelocity.y);
         Jump();
         FlipSprite();
         isGrounded = RayCollisionCheck(0, 0.4f);
@@ -63,7 +63,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         if( jumpAction.WasPressedThisFrame() && (isGrounded == true) )
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 80);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 8);
         }
     }
 
@@ -96,7 +96,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
         if (hit.collider != null)
         {
-            print("Player has collided with Ground layer");
+           
             hitColor = Color.green;
             hitSomething = true;
         }
