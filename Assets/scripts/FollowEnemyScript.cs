@@ -5,20 +5,31 @@ public class FollowEnemyScript : MonoBehaviour
     public GameObject Player;
     public GameObject Self;
     Rigidbody2D rb;
-    SpriteRenderer sr;
+    
     float dir;
+    HelperScript helper;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        
         dir = 0.8f;
+        helper = gameObject.AddComponent<HelperScript>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        FlipSprite();
+        if (Player.transform.position.x > Self.transform.position.x)
+        {
+            helper.FlipSprite(true);
+
+        }
+        else
+        {
+            helper.FlipSprite(false);
+
+        }
         if (Player.transform.position.x > Self.transform.position.x)
         {
             rb.linearVelocityX = dir;
@@ -28,15 +39,5 @@ public class FollowEnemyScript : MonoBehaviour
             rb.linearVelocityX = -dir;
         }
     }
-    void FlipSprite()
-    {
-        if (Player.transform.position.x > Self.transform.position.x)
-        {
-            sr.flipX = true;
-        }
-        else
-        {
-            sr.flipX = false;
-        }
-    }
+    
 }

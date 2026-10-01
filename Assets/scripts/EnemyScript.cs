@@ -5,20 +5,22 @@ public class EnemyScript : MonoBehaviour
 {
     Rigidbody2D rb;
     Animator anim;
-    SpriteRenderer sr;
+    
     bool left;
     bool right;
     bool result;
     public LayerMask groundLayerMask;
     float dir;
+    HelperScript helper;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();      
-        sr = GetComponent<SpriteRenderer>();
+        
         groundLayerMask = LayerMask.GetMask("Ground");
         dir = 1;
+        helper = gameObject.AddComponent<HelperScript>();
     }
 
     // Update is called once per frame
@@ -46,18 +48,19 @@ public class EnemyScript : MonoBehaviour
 
         rb.linearVelocityX = dir;
 
-        
-        FlipSprite();
-       /*
-        if (sr.flipX == false)
+
+        if (dir < 0)
         {
-            rb.linearVelocityX = -dir;
+            helper.FlipSprite(false);
+
         }
-        else
+
+        if (dir > 0)
         {
-            rb.linearVelocityX = dir;
-        }*/
-       
+            helper.FlipSprite(true);
+
+        }
+
         if (rb.linearVelocityX != 0)
         {
             anim.SetBool("walk", true);
@@ -69,18 +72,7 @@ public class EnemyScript : MonoBehaviour
         
 
     }
-    void FlipSprite()
-    {
-        if ( dir<0)
-        {
-            sr.flipX = false;
-        }
-
-        if ( dir>0)
-        {
-            sr.flipX = true;
-        }
-    }
+   
 
    
 

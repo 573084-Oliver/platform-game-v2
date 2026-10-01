@@ -6,25 +6,26 @@ public class NewMonoBehaviourScript : MonoBehaviour
     //declare the variables
     InputAction moveAction;
     InputAction jumpAction;
+    InputAction destroyAction;
     Rigidbody2D rb;
     Animator anim;
-    SpriteRenderer sr;
     public LayerMask groundLayerMask;
     bool isGrounded;
     bool result;
-       
+    HelperScript helper;
 
     void Start()
     {
         //initialise the variables
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
+        destroyAction = InputSystem.actions.FindAction("Destroy");
         //required: a 2D Rigidbody component attached to the Game Object
         rb = GetComponent<Rigidbody2D>();    
         anim = GetComponent<Animator>();      //initialise the rigidbody component
-        sr = GetComponent<SpriteRenderer>();
         groundLayerMask = LayerMask.GetMask("Ground");
         print("kept you waiting, huh?");
+        helper = gameObject.AddComponent<HelperScript>();
     }
 
     // Update is called once per frame
@@ -34,7 +35,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
         Vector2 moveVel = moveAction.ReadValue<Vector2>();
         rb.linearVelocity = new Vector2(moveVel.x * 3, rb.linearVelocity.y);
         Jump();
-        FlipSprite();
         isGrounded = RayCollisionCheck(0, 0.4f);
 
         if (rb.linearVelocityX != 0)
@@ -56,7 +56,21 @@ public class NewMonoBehaviourScript : MonoBehaviour
             anim.SetBool("crouch", false);
         }
 
-       
+        if (rb.linearVelocityX < -0.1f)
+        {
+            helper.FlipSprite(true);
+
+        }
+        if (rb.linearVelocityX > 0.1f)
+        {
+            helper.FlipSprite(false);
+
+        }
+        if (destroyAction.WasPressedThisFrame())
+        {
+            helper.DestroyObject(true);
+        }
+        
     }
 
     void Jump()
@@ -66,18 +80,15 @@ public class NewMonoBehaviourScript : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 8);
         }
     }
-
-    void FlipSprite()
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (rb.linearVelocityX < -0.1f)
+        Vector2 moveVel = moveAction.ReadValue<Vector2>();
+        if ((other.gameObject.tag == "Enemy") && (moveVel.y > -0.5))
         {
-            sr.flipX = true;
-        }
-        if (rb.linearVelocityX > 0.1f)
-        {
-            sr.flipX = false;
+            helper.DestroyObject(true);
         }
     }
+
     public bool RayCollisionCheck(float xoffs, float yoffs)
     {
         float rayLength = 0.5f; // length of raycast
@@ -100,14 +111,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
             hitColor = Color.green;
             hitSomething = true;
         }
-        if (hit.collider != null)
-        {
-            isGrounded = true;
-        }
-        else
-        {
-            isGrounded = false;
-        }
+        
         // draw a debug ray to show ray's position
         // You need to enable gizmos in th e editor to see these
         Debug.DrawRay(transform.position + offset, Vector2.down * rayLength, hitColor);

@@ -3,18 +3,20 @@ using UnityEngine;
 public class CarEnemyScript : MonoBehaviour
 {
     Rigidbody2D rb;
-    SpriteRenderer sr;
+   
     bool left;
     bool right;
     public LayerMask groundLayerMask;
     float dir;
+    HelperScript helper;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         groundLayerMask = LayerMask.GetMask("Ground");
         dir = 1;
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        
+        helper = gameObject.AddComponent<HelperScript>();
     }
 
     // Update is called once per frame
@@ -44,20 +46,19 @@ public class CarEnemyScript : MonoBehaviour
         rb.linearVelocityX = dir;
 
 
-        FlipSprite();
-    }
-    void FlipSprite()
-    {
         if (dir < 0)
         {
-            sr.flipX = false;
+            helper.FlipSprite(false);
+
         }
 
         if (dir > 0)
         {
-            sr.flipX = true;
+            helper.FlipSprite(true);
+
         }
     }
+    
     public bool RayCollisionCheck(float xoffs, float yoffs)
     {
         float rayLength = 0.5f; // length of raycast
